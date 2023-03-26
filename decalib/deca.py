@@ -261,6 +261,26 @@ class DECA(nn.Module):
         else:
             return opdict
 
+    # @torch.no_grad()
+    def create_lmks(self, codedict, original_image=None, tform=None):
+        images = codedict['images']
+        batch_size = images.shape[0]
+        
+        ## decode
+        _, landmarks2d, _ = self.flame(shape_params=codedict['shape'], expression_params=codedict['exp'],
+                                                 pose_params=codedict['pose'])
+
+        ## projection
+        points_scale = [self.image_size, self.image_size]
+        _, _, h, w = original_image.shape
+        landmarks2d = util.batch_orth_proj(landmarks2d, codedict['cam'])[:,:,:2]; landmarks2d[:,:,1:] = -landmarks2d[:,:,1:]
+        landmarks2d = transform_points(landmarks2d, tform, points_scale, [h, w])
+        
+        landmarks2d[...,0] = landmarks2d[...,0]*w/2 + w/2
+        landmarks2d[...,1] = landmarks2d[...,1]*h/2 + h/2
+
+        return landmarks2d
+
     def visualize(self, visdict, size=224, dim=2):
         '''
         image range should be [0,1]
