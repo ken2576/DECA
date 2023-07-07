@@ -1,3 +1,5 @@
+# ***This is a fork of the original repo (https://github.com/yfeng95/DECA)***
+
 # DECA: Detailed Expression Capture and Animation (SIGGRAPH2021)
 
 <p align="center"> 
